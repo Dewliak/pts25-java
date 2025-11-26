@@ -1,5 +1,7 @@
 package sk.uniba.fmph.dcs.terra_futura;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class SelectReward {
      */
     public void setReward(final int playerId, final Card card, final List<Resource> reward) {
         assistingPlayer = playerId;
-        selection = reward;
+        selection = new ArrayList<>(reward); // so we have the copy of the original
         assistingCard = card;
 
     }
@@ -53,6 +55,12 @@ public class SelectReward {
      * @return returns the state of the class
      */
     public String state() {
-        throw new RuntimeException("Not implemented");
+        JSONObject jsonState = new JSONObject();
+
+        jsonState.put("assistingPlayer", assistingPlayer);
+        jsonState.put("assistingCard", assistingCard);
+        jsonState.put("selection", selection);
+
+        return jsonState.toString(4);
     }
 }
