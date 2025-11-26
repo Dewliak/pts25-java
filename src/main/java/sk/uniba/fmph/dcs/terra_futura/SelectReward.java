@@ -1,36 +1,52 @@
 package sk.uniba.fmph.dcs.terra_futura;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SelectReward {
-    private int player;
     private List<Resource> selection;
-
-    public SelectReward(final int player, final List<Resource> selection) {
-        this.player = player;
-        this.selection = selection;
+    private Card assistingCard = null;
+    private int assistingPlayer = -1;
+    public SelectReward() {
+        selection = new ArrayList<>();
     }
+
     /**
      * @param playerId the id of the player
      * @param card the card granting the reward
      * @param reward the reward you want to choose
      */
-    public void setReward(final int playerId, final Card card, final Resource reward) {
-        throw new RuntimeException("Not implemented");
+    public void setReward(final int playerId, final Card card, final List<Resource> reward) {
+        assistingPlayer = playerId;
+        selection = reward;
+        assistingCard = card;
+
     }
     /**
      * @param reward the reward you want to check if available
      * @return boolean if you can select it
      */
-    public boolean canSelectReward(final Resource reward) {
-        throw new RuntimeException("Not implemented");
+    public boolean canSelectReward(final int playerId, final Resource reward) {
+        return playerId == assistingPlayer && selection.contains(reward);
     }
 
     /**
      * @param reward the reward to be chosen
      */
-    public void selectReward(final Resource reward) {
-        throw new RuntimeException("Not implemented");
+    public void selectReward(final int playerId, final Resource reward) {
+        if(!canSelectReward(playerId, reward)) {
+            return;
+        }
+
+        if(!assistingCard.canPutResources(List.of(reward))){
+            return;
+        }
+
+        assistingCard.putResources(List.of(reward));
+
+        selection.clear();
+        assistingCard = null;
+        assistingPlayer = -1;
     }
 
     /**
