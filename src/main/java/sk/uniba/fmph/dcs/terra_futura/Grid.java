@@ -1,11 +1,13 @@
 package sk.uniba.fmph.dcs.terra_futura;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Grid {
 
-    private int numberOfCards = 0;
     private List<List<Card>> cardGrid;
     private List<List<Boolean>> canBeActivatedGrid;
     private List<GridPosition> activationPattern;
@@ -23,7 +25,7 @@ public class Grid {
         return Math.abs(a - b) <= MAX_DISTANCE;
     }
 
-    public Grid() {
+    public Grid(Card startingCard) {
         cardGrid = new ArrayList<>();
         canBeActivatedGrid = new ArrayList<>();
         activationPattern = new ArrayList<>();
@@ -31,7 +33,12 @@ public class Grid {
             List<Card> cards = new ArrayList<>();
             List<Boolean> canBeActivatedRow = new ArrayList<>();
             for (int j = 0; j < GRID_SIZE; j++) {
-                cards.add(null);
+                if(i - OFFSET == 0 && j - OFFSET == 0) {
+                    cards.add(startingCard);
+                }
+                else {
+                    cards.add(null);
+                }
                 canBeActivatedRow.add(false);
             }
             cardGrid.add(cards);
@@ -127,8 +134,29 @@ public class Grid {
         clearCanBeActivatedGrid();
     }
 
-    public void state() {
+    public String state() {
+        // slices out a 3x3 grid, which is bounded my the most left and the most upper card
+        int outputGridSize = GRID_SIZE - 2; // = 3  since the size of the grid is 5 and we always have space for a 3x3 grid to output, what we want
 
+        JSONObject gridState = new JSONObject();
+
+        JSONArray rows = new JSONArray();
+        for(int i =0; i < outputGridSize;i++){
+            JSONArray row = new JSONArray();
+            for(int j = 0; j < outputGridSize;j++){
+                Card card = cardGrid.get(max_up + OFFSET -  i).get(max_left +  OFFSET + j);
+                if( card == null){
+                    row.put(JSONObject.NULL);
+                }
+                else{
+                    row.put(card.state());
+                }
+            }
+            rows.put(row);
+        }
+        gridState.put("grid", rows);
+
+        return gridState.toString(4);
     }
 
 
